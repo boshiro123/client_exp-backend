@@ -39,6 +39,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ApiError> handleIllegalArgumentException(
+      IllegalArgumentException ex, WebRequest request) {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), "Ошибка в запросе");
+    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {

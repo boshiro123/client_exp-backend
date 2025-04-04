@@ -20,6 +20,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider tokenProvider;
+  private final TokenBlacklist tokenBlacklist;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -27,12 +28,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       String jwt = getJwtFromRequest(request);
 
-      if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-        Authentication authentication = tokenProvider.getAuthentication(jwt);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+      if (StringUtils.hasText(jwt)) {
+        // Проверяем, не в черном ли списке токен
+        if (tokenBlacklist.isBlacklisted(jwt)) {
+          log.warn("Попытка использования токена из черного списка. URI: {}", request.getRequestURI());
+          // Продолжаем фильтрацию без установки аутентификации
+        } else if (tokenProvider.validateToken(jwt)) {
+          Authentication authentication = tokenProvider.getAuthentication(jwt);
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+          log.debug("Пользователь аутентифицирован с токеном JWT. URI: {}", request.getRequestURI());
+        } else {
+          log.warn("Недействительный JWT токен. URI: {}", request.getRequestURI());
+        }
       }
     } catch (Exception ex) {
       log.error("Не удалось установить аутентификацию пользователя: {}", ex.getMessage());
+      SecurityContextHolder.clearContext(); // Очищаем контекст безопасности при ошибке
     }
 
     filterChain.doFilter(request, response);
