@@ -62,5 +62,18 @@ spring:
     enabled: true
     contexts: dev
 
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
 server:
   port: 8080
+
+jwt:
+  secret: 7638792F423F4528482B4D6251655468576D5A7134743777217A25432A462D4A
+  expiration: 86400000 # 24 часа
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    back.client_exp_backend: DEBUG
