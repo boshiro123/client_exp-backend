@@ -57,7 +57,11 @@ public class JwtTokenProvider {
     String email = claims.getSubject();
     String role = claims.get("role", String.class);
 
+    log.debug("Аутентификация пользователя: {}, роль: {}", email, role);
+
     var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+    log.debug("Предоставляемые права доступа: {}", authorities);
 
     return new UsernamePasswordAuthenticationToken(email, null, authorities);
   }

@@ -37,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           Authentication authentication = tokenProvider.getAuthentication(jwt);
           SecurityContextHolder.getContext().setAuthentication(authentication);
           log.debug("Пользователь аутентифицирован с токеном JWT. URI: {}", request.getRequestURI());
+          log.debug("Информация об аутентификации: username={}, authorities={}",
+              authentication.getName(),
+              authentication.getAuthorities());
         } else {
           log.warn("Недействительный JWT токен. URI: {}", request.getRequestURI());
         }

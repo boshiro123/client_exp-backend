@@ -4,6 +4,7 @@ import back.client_exp_backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -37,8 +38,23 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
+            // Публичные эндпоинты для авторизации
             .requestMatchers("/api/auth/**").permitAll()
+
+            // Публичные эндпоинты для доступа к опросникам
+            .requestMatchers("/api/surveys/public/**").permitAll()
+
+            // API пользователей только для админов
             .requestMatchers("/api/users/**").hasRole("ADMIN")
+
+            // API опросников
+            .requestMatchers(HttpMethod.GET, "/api/surveys/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers(HttpMethod.POST, "/api/surveys/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers(HttpMethod.PUT, "/api/surveys/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers(HttpMethod.DELETE, "/api/surveys/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers(HttpMethod.PATCH, "/api/surveys/**").hasAnyRole("ADMIN", "MANAGER")
+
+            // Все остальные запросы требуют аутентификации
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
