@@ -35,6 +35,8 @@ public class SurveyDto {
 
   private String statusString;
 
+  private String category;
+
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate startDate;
 

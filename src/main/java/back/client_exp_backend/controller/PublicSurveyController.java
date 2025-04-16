@@ -62,4 +62,26 @@ public class PublicSurveyController {
     }
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<SurveyDto> getSurveyById(@PathVariable Long id) {
+    log.info("Запрос на получение опросника с id: {}", id);
+    try {
+      SurveyDto surveyDto = surveyService.getSurveyById(id);
+
+      try {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.registerModule(new JavaTimeModule());
+        log.info("Данные опросника: \n{}", objectMapper.writeValueAsString(surveyDto));
+      } catch (Exception e) {
+        log.error("Ошибка при логировании ответа: {}", e.getMessage());
+      }
+
+      return ResponseEntity.ok(surveyDto);
+    } catch (Exception e) {
+      log.error("Ошибка при получении опросника: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+  }
 }

@@ -41,9 +41,8 @@ public class Question {
   @Column(name = "order_number", nullable = false)
   private Integer orderNumber;
 
-  @ManyToOne
-  @JoinColumn(name = "category_id")
-  private QuestionCategory category;
+  @Column(name = "category")
+  private String category;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "metric_type")
@@ -52,7 +51,7 @@ public class Question {
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<AnswerOption> answerOptions = new ArrayList<>();
 
-  @OneToMany(mappedBy = "question")
+  @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClientAnswer> clientAnswers = new ArrayList<>();
 
   @Column(name = "created_at", nullable = false)

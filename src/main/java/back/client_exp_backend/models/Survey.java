@@ -53,7 +53,7 @@ public class Survey {
   @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Question> questions = new ArrayList<>();
 
-  @OneToMany(mappedBy = "survey")
+  @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClientAnswer> clientAnswers = new ArrayList<>();
 
   @Column(name = "created_at", nullable = false)

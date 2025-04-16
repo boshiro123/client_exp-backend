@@ -32,7 +32,7 @@ public class AnswerOption {
   @Column(name = "order_number", nullable = false)
   private Integer orderNumber;
 
-  @OneToMany(mappedBy = "answerOption")
+  @OneToMany(mappedBy = "answerOption", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClientAnswer> clientAnswers = new ArrayList<>();
 
   @Column(name = "created_at", nullable = false)

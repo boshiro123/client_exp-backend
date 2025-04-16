@@ -10,6 +10,7 @@ import back.client_exp_backend.models.*;
 import back.client_exp_backend.models.enums.QuestionType;
 import back.client_exp_backend.models.enums.SurveyStatus;
 import back.client_exp_backend.repository.AnswerOptionRepository;
+import back.client_exp_backend.repository.ClientAnswerRepository;
 import back.client_exp_backend.repository.QuestionRepository;
 import back.client_exp_backend.repository.SurveyRepository;
 import back.client_exp_backend.service.SurveyService;
@@ -40,6 +41,7 @@ public class SurveyServiceImpl implements SurveyService {
   private final SurveyRepository surveyRepository;
   private final QuestionRepository questionRepository;
   private final AnswerOptionRepository answerOptionRepository;
+  private final ClientAnswerRepository clientAnswerRepository;
   private final UserService userService;
 
   @PersistenceContext
@@ -143,6 +145,7 @@ public class SurveyServiceImpl implements SurveyService {
             .type(questionType)
             .required(questionDto.getRequired())
             .orderNumber(orderNumber++)
+            .category(questionDto.getCategory())
             .answerOptions(new ArrayList<>())
             .build();
 
@@ -283,6 +286,7 @@ public class SurveyServiceImpl implements SurveyService {
         .type(question.getType() != null ? question.getType().name() : null)
         .required(question.isRequired())
         .orderNumber(question.getOrderNumber())
+        .category(question.getCategory())
         .options(options)
         .build();
   }
@@ -501,6 +505,15 @@ public class SurveyServiceImpl implements SurveyService {
         .orElseThrow(() -> new ResourceNotFoundException("Опросник", "id", id));
 
     try {
+      // Сначала удаляем ответы клиентов на этот опрос
+      log.debug("Удаление ответов клиентов на опрос с ID: {}", id);
+      List<ClientAnswer> clientAnswers = clientAnswerRepository.findBySurvey(survey);
+      if (!clientAnswers.isEmpty()) {
+        log.debug("Найдено {} ответов клиентов для удаления", clientAnswers.size());
+        clientAnswerRepository.deleteAll(clientAnswers);
+        clientAnswerRepository.flush(); // Принудительно фиксируем изменения в БД
+      }
+
       // Непосредственное удаление опросника
       // Hibernate автоматически удалит зависимые сущности благодаря настройке cascade
       // = CascadeType.ALL

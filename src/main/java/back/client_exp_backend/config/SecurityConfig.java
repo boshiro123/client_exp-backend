@@ -44,6 +44,9 @@ public class SecurityConfig {
             // Публичные эндпоинты для доступа к опросникам
             .requestMatchers("/api/surveys/public/**").permitAll()
 
+            // Публичные эндпоинты для отправки ответов на опросы
+            .requestMatchers("/api/surveys/responses/**").permitAll()
+
             // API пользователей только для админов
             .requestMatchers("/api/users/**").hasRole("ADMIN")
 
