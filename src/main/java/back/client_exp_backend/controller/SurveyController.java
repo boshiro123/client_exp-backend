@@ -4,8 +4,6 @@ import back.client_exp_backend.dto.PagedResponseDto;
 import back.client_exp_backend.dto.QuestionDto;
 import back.client_exp_backend.dto.SurveyDto;
 import back.client_exp_backend.dto.SurveyStatusUpdateRequest;
-import back.client_exp_backend.exception.ApiError;
-import back.client_exp_backend.models.enums.QuestionType;
 import back.client_exp_backend.models.enums.SurveyStatus;
 import back.client_exp_backend.service.SurveyService;
 import jakarta.validation.Valid;
@@ -19,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/surveys")
@@ -64,6 +60,7 @@ public class SurveyController {
       log.error("Ошибка при создании опросника: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
+
   }
 
   @GetMapping
@@ -81,14 +78,6 @@ public class SurveyController {
       }
     }
     PagedResponseDto<SurveyDto> response = surveyService.getAllSurveys(page, size, surveyStatus);
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-      objectMapper.registerModule(new JavaTimeModule());
-      log.info("Запрос на получение списка опросников: \n{}", objectMapper.writeValueAsString(response));
-    } catch (Exception e) {
-      log.error("Ошибка при логировании запроса: {}", e.getMessage());
-    }
     return ResponseEntity.ok(response);
   }
 

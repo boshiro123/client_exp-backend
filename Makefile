@@ -15,6 +15,11 @@ build:
 stop:
 	docker compose stop
 
+
+update:
+	mvn clean package -DskipTests
+	docker compose up --build service
+
 up:
 	docker compose up -d
 
