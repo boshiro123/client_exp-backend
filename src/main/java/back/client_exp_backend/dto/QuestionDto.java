@@ -1,5 +1,6 @@
 package back.client_exp_backend.dto;
 
+import back.client_exp_backend.models.enums.MetricType;
 import back.client_exp_backend.models.enums.QuestionType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,6 +21,8 @@ import java.util.List;
 public class QuestionDto {
 
   private Long id;
+
+  private Long surveyId;
 
   @NotBlank(message = "Текст вопроса обязателен")
   private String text;
@@ -31,10 +35,18 @@ public class QuestionDto {
 
   private String category;
 
+  private MetricType metricType;
+
   private Integer orderNumber;
 
   @Size(min = 1, message = "Для вопросов с выбором ответа должен быть хотя бы один вариант ответа")
   private List<String> options;
+
+  private List<AnswerOptionDto> answerOptions;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
 
   @JsonIgnore
   public boolean hasValidType() {
